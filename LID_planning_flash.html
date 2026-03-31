@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LID — Planning Flash 7 jours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--cream:#f2ede4;--sand:#e8dfd0;--kraft:#c9a96e;--kraft-dark:#8b6914;--kraft-deep:#5c4510;--brown:#3d2b0e;--brown-light:#6b4c1e;--warm-white:#faf8f4;--text:#2c1f0a;--text-muted:#8b7355;--border:rgba(139,105,20,0.18);}
+body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--text);font-weight:300;min-height:100vh;padding:2rem 1rem;}
+.wrap{max-width:720px;margin:0 auto;padding:0 0 3rem;}
+
+.header{background:var(--kraft-deep);padding:2rem 2rem 1.5rem;margin-bottom:1.5rem;border-radius:2px;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,169,110,0.15) 0%,transparent 60%);}
+.header-eyebrow{font-family:'Jost',sans-serif;font-weight:200;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--kraft);margin-bottom:0.5rem;position:relative;}
+.header-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--warm-white);letter-spacing:0.08em;line-height:1.1;font-style:italic;position:relative;}
+.header-title span{font-style:normal;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;font-size:14px;display:block;margin-top:4px;color:var(--kraft);}
+.header-badge{display:inline-block;margin-top:10px;padding:4px 14px;border:1px solid rgba(201,169,110,0.5);border-radius:1px;font-family:'Jost',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:var(--kraft);position:relative;}
+
+/* Progress bar globale */
+.progress-wrap{margin-bottom:1.5rem;}
+.progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:6px;}
+.progress-fill{height:100%;background:var(--kraft);border-radius:2px;transition:width 0.4s;}
+.progress-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:300;letter-spacing:0.1em;color:var(--text-muted);display:flex;justify-content:space-between;}
+.progress-label span{color:var(--kraft-dark);font-weight:400;}
+
+.days{display:flex;flex-direction:column;gap:6px;}
+.day-row{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:2px;background:var(--warm-white);cursor:pointer;transition:all 0.2s;position:relative;}
+.day-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background 0.2s;}
+.day-row:hover{background:var(--cream);border-color:rgba(139,105,20,0.3);}
+.day-row:hover::before{background:var(--kraft);}
+.day-row.checked{background:var(--cream);border-color:rgba(139,105,20,0.35);}
+.day-row.checked::before{background:var(--kraft-dark);}
+
+.check-circle{width:20px;height:20px;border-radius:50%;border:1px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;background:transparent;}
+.day-row.checked .check-circle{background:var(--kraft-dark);border-color:var(--kraft-dark);}
+.check-icon{display:none;}
+.day-row.checked .check-icon{display:block;}
+
+.day-content{flex:1;min-width:0;}
+.day-jour{font-family:'Jost',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;}
+.day-row.checked .day-jour{color:var(--kraft-dark);}
+.day-task{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--brown);line-height:1.3;margin-bottom:3px;}
+.day-row.checked .day-task{color:var(--kraft-dark);}
+.day-detail{font-family:'Jost',sans-serif;font-size:12px;font-weight:200;color:var(--text-muted);line-height:1.6;}
+
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.day-tag{padding:3px 10px;border-radius:1px;font-family:'Jost',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;}
+.t-video{background:#f0e8d8;color:#8b6914;}
+.t-action{background:#e8e0d4;color:#5c4510;}
+.t-livrable{background:#d4b896;color:#3d2b0e;}
+.t-optional{background:#f0ece6;color:#9a845a;}
+
+/* Livrable banner inline */
+.lv-inline{background:var(--kraft-deep);border-radius:2px;padding:10px 14px;margin-top:8px;display:flex;align-items:center;gap:10px;}
+.lv-inline-icon{color:var(--kraft);font-size:14px;flex-shrink:0;}
+.lv-inline-text{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--warm-white);line-height:1.4;}
+
+.done-banner{display:none;border:1px solid var(--kraft);border-radius:2px;padding:20px;text-align:center;background:var(--cream);margin-top:1rem;}
+.done-banner.show{display:block;animation:fadeUp 0.3s ease;}
+.done-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--kraft-dark);margin-bottom:6px;}
+.done-sub{font-family:'Jost',sans-serif;font-size:12px;font-weight:200;letter-spacing:0.06em;color:var(--text-muted);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="header-eyebrow">L'Indépendance Digitale</div>
+  <div class="header-title">ton planning de formation<span>Version Flash — 7 jours</span></div>
+  <div class="header-badge">Pour celles qui n'attendent pas</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="pfill" style="width:0%"></div></div>
+  <div class="progress-label"><span id="plabel">0 / 7 jours complétés</span><span id="ppct">0%</span></div>
+</div>
+
+<div class="days">
+
+  <!-- J1 -->
+  <div class="day-row" onclick="toggle(this,0)">
+    <div class="check-circle"><svg class="check-icon" width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="#faf8f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="day-content">
+      <div class="day-jour">Jour 1</div>
+      <div class="day-task">Fondations & orientation</div>
+      <div class="day-detail">Module "Commence ici" + Déclaration d'activité (lance les démarches dès aujourd'hui) · Mindset d'entrepreneur · La méthode virale · Tour rapide des modules optionnels (5 à 10 min chacun) pour choisir ta source de revenus</div>
+      <div class="tags"><span class="day-tag t-video">Vidéo</span></div>
+      <div class="lv-inline"><span class="lv-inline-icon">◇</span><span class="lv-inline-text">Décision prise : source de revenus choisie</span></div>
+    </div>
+  </div>
+
+  <!-- J2 -->
+  <div class="day-row" onclick="toggle(this,1)">
+    <div class="check-circle"><svg class="check-icon" width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="#faf8f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="day-content">
+      <div class="day-jour">Jour 2</div>
+      <div class="day-task">Identité & présence en ligne</div>
+      <div class="day-detail">Niche & branding · Optimisation du profil · Crée tes comptes réseaux · Remplis ta fiche niche (template fourni)</div>
+      <div class="tags"><span class="day-tag t-video">Vidéo</span><span class="day-tag t-action">Action</span></div>
+      <div class="lv-inline"><span class="lv-inline-icon">◇</span><span class="lv-inline-text">Fiche niche complétée + profils créés → à envoyer sur Telegram</span></div>
+    </div>
+  </div>
+
+  <!-- J3 -->
+  <div class="day-row" onclick="toggle(this,2)">
+    <div class="check-circle"><svg class="check-icon" width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="#faf8f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="day-content">
+      <div class="day-jour">Jour 3</div>
+      <div class="day-task">TikTok & source de revenus</div>
+      <div class="day-detail">Module TikTok complet · Module propre à ta source de revenus choisie (MRR · YouTube Faceless · Pinterest · Ebooks PLR · UGC · Affiliation…)</div>
+      <div class="tags"><span class="day-tag t-video">Vidéo</span></div>
+    </div>
+  </div>
+
+  <!-- J4 -->
+  <div class="day-row" onclick="toggle(this,3)">
+    <div class="check-circle"><svg class="check-icon" width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="#faf8f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="day-content">
+      <div class="day-jour">Jour 4</div>
+      <div class="day-task">Boutique en ligne</div>
+      <div class="day-detail">Module boutique · choix entre Stan Store, Systeme.io ou Beacons selon tes préférences et ton budget · Configure ta boutique · Bio · lien en bio · produit ou offre créé et listé · logo optionnel · Automatisations (optionnel selon ton profil)</div>
+      <div class="tags"><span class="day-tag t-video">Vidéo</span><span class="day-tag t-action">Action</span><span class="day-tag t-optional">Auto. optionnel</span></div>
+      <div class="lv-inline"><span class="lv-inline-icon">◇</span><span class="lv-inline-text">Boutique active avec au moins 1 offre listée → à envoyer sur Telegram</span></div>
+    </div>
+  </div>
+
+  <!-- J5 -->
+  <div class="day-row" onclick="toggle(this,4)">
+    <div class="check-circle"><svg class="check-icon" width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="#faf8f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="day-content">
+      <div class="day-jour">Jour 5</div>
+      <div class="day-task">Vente & copywriting</div>
+      <div class="day-detail">Vente en ligne · Faceless (si pertinent) · Storytelling · Copywriting — les bases pour écrire des textes qui convertissent</div>
+      <div class="tags"><span class="day-tag t-video">Vidéo</span></div>
+    </div>
+  </div>
+
+  <!-- J6 -->
+  <div class="day-row" onclick="toggle(this,5)">
+    <div class="check-circle"><svg class="check-icon" width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="#faf8f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="day-content">
+      <div class="day-jour">Jour 6</div>
+      <div class="day-task">Contenu, mindset & tunnel</div>
+      <div class="day-detail">Création de contenu · Money mindset · Intelligence financière · Finalise ton tunnel de vente : page de vente · lien de paiement · email de confirmation · teste le parcours complet</div>
+      <div class="tags"><span class="day-tag t-video">Vidéo</span><span class="day-tag t-action">Action</span></div>
+    </div>
+  </div>
+
+  <!-- J7 -->
+  <div class="day-row" onclick="toggle(this,6)">
+    <div class="check-circle"><svg class="check-icon" width="9" height="9" viewBox="0 0 10 10" fill="none"><polyline points="1.5,5 4,7.5 8.5,2" stroke="#faf8f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="day-content">
+      <div class="day-jour">Jour 7</div>
+      <div class="day-task">Activation finale</div>
+      <div class="day-detail">Prépare tes 3 premiers contenus (hooks fournis + calendrier de contenu) · Réserve ton call de démarrage via Calendly · Envoie le récap final sur Telegram : tunnel + 3 contenus prêts + créneau confirmé</div>
+      <div class="tags"><span class="day-tag t-action">Action</span><span class="day-tag t-livrable">Livrable</span></div>
+      <div class="lv-inline"><span class="lv-inline-icon">◇</span><span class="lv-inline-text">Système complet en place — call de démarrage réservé</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="done-banner" id="done">
+  <div class="done-title">7 jours. Système en place. C'est maintenant.</div>
+  <div class="done-sub">Ton call de démarrage arrive — on publie ensemble et on accélère.</div>
+</div>
+
+</div>
+<script>
+const st=new Array(7).fill(false);
+function toggle(el,i){st[i]=!st[i];el.classList.toggle('checked',st[i]);update();}
+function update(){
+  const d=st.filter(Boolean).length;
+  const pct=Math.round(d/7*100);
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('plabel').textContent=d+' / 7 jours complétés';
+  document.getElementById('ppct').textContent=pct+'%';
+  document.getElementById('done').classList.toggle('show',d===7);
+}
+</script>
+</body>
+</html>
