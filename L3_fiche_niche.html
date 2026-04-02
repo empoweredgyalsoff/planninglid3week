@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LID — Ta fiche niche</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--cream:#f2ede4;--sand:#e8dfd0;--kraft:#c9a96e;--kraft-dark:#8b6914;--kraft-deep:#5c4510;--brown:#3d2b0e;--warm-white:#faf8f4;--text:#2c1f0a;--text-muted:#8b7355;--border:rgba(139,105,20,0.18);}
+body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--text);font-weight:300;min-height:100vh;padding:2rem 1rem;}
+.wrap{max-width:720px;margin:0 auto;padding:0 0 3rem;}
+.header{background:var(--kraft-deep);padding:1.5rem 1.5rem 1.25rem;margin-bottom:1.5rem;border-radius:2px;position:relative;overflow:hidden;}
+.header::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,169,110,0.15) 0%,transparent 60%);}
+.header-eye{font-family:'Jost',sans-serif;font-weight:200;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--kraft);margin-bottom:4px;position:relative;}
+.header-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--warm-white);font-style:italic;position:relative;}
+.header-sub{font-family:'Jost',sans-serif;font-size:11px;font-weight:200;color:var(--kraft);margin-top:6px;position:relative;letter-spacing:0.05em;}
+.progress-wrap{margin-bottom:1.5rem;}
+.progress-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:6px;}
+.progress-fill{height:100%;background:var(--kraft);border-radius:2px;transition:width 0.4s;}
+.progress-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:300;letter-spacing:0.1em;color:var(--text-muted);display:flex;justify-content:space-between;}
+.step{display:none;}
+.step.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--sand);line-height:1;margin-bottom:4px;}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--brown);margin-bottom:6px;}
+.step-hint{font-family:'Jost',sans-serif;font-size:12px;font-weight:200;color:var(--text-muted);margin-bottom:16px;line-height:1.6;}
+input[type=text],textarea{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:2px;background:var(--warm-white);font-family:'Jost',sans-serif;font-size:13px;font-weight:300;color:var(--text);outline:none;transition:border-color 0.2s;resize:vertical;}
+input[type=text]:focus,textarea:focus{border-color:var(--kraft);}
+textarea{min-height:80px;}
+label.field-label{display:block;font-family:'Jost',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;color:var(--kraft-dark);margin-bottom:6px;margin-top:14px;}
+label.field-label:first-child{margin-top:0;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.pill{padding:6px 14px;border:1px solid var(--border);border-radius:1px;font-family:'Jost',sans-serif;font-size:11px;font-weight:300;letter-spacing:0.08em;color:var(--text-muted);cursor:pointer;transition:all 0.2s;user-select:none;}
+.pill:hover{border-color:var(--kraft);color:var(--kraft-dark);}
+.pill.selected{background:var(--kraft-deep);border-color:var(--kraft-deep);color:var(--warm-white);}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+.btn{padding:10px 24px;border-radius:1px;font-family:'Jost',sans-serif;font-size:11px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--text-muted);}
+.btn-back:hover{border-color:var(--kraft);color:var(--kraft-dark);}
+.btn-next{background:var(--kraft-deep);border:1px solid var(--kraft-deep);color:var(--warm-white);}
+.btn-next:hover{background:var(--kraft-dark);}
+.btn-generate{background:var(--kraft-deep);border:1px solid var(--kraft-deep);color:var(--warm-white);padding:12px 28px;}
+.btn-generate:hover{background:var(--kraft-dark);}
+.recap{display:none;animation:fadeUp 0.3s ease;}
+.recap.show{display:block;}
+.recap-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem;}
+.recap-block{border:1px solid var(--border);border-radius:2px;background:var(--warm-white);padding:14px 16px;position:relative;}
+.recap-block::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--kraft);}
+.recap-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;color:var(--kraft-dark);margin-bottom:5px;}
+.recap-value{font-family:'Jost',sans-serif;font-size:13px;font-weight:300;color:var(--text);line-height:1.7;}
+.prompt-bloc{border:1px solid var(--kraft);border-radius:2px;padding:1.5rem;background:var(--cream);margin-bottom:1rem;}
+.prompt-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.22em;text-transform:uppercase;color:var(--kraft-dark);margin-bottom:6px;}
+.prompt-instruction{font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--brown);line-height:1.6;margin-bottom:14px;}
+.prompt-box{background:var(--warm-white);border:1px solid var(--border);border-radius:2px;padding:14px;font-family:'Jost',sans-serif;font-size:12px;font-weight:300;color:var(--text-muted);line-height:1.7;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;}
+.copy-btn{width:100%;margin-top:8px;padding:12px;border:1px solid var(--kraft);border-radius:2px;background:transparent;font-family:'Jost',sans-serif;font-size:10px;font-weight:400;letter-spacing:0.18em;text-transform:uppercase;color:var(--kraft-dark);cursor:pointer;transition:all 0.2s;}
+.copy-btn:hover{background:var(--kraft-deep);color:var(--warm-white);border-color:var(--kraft-deep);}
+.copy-confirm{display:none;text-align:center;font-family:'Jost',sans-serif;font-size:11px;color:var(--kraft-dark);margin-top:8px;font-style:italic;}
+.reset-btn{width:100%;margin-top:8px;padding:12px;border:1px solid var(--border);border-radius:2px;background:transparent;font-family:'Jost',sans-serif;font-size:10px;font-weight:400;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;transition:all 0.2s;}
+.reset-btn:hover{border-color:var(--kraft);color:var(--kraft-dark);}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="header">
+  <div class="header-eye">L'Indépendance Digitale</div>
+  <div class="header-title">Ta fiche niche</div>
+  <div class="header-sub">Réponds aux questions — ta fiche se construit toute seule</div>
+</div>
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="pfill" style="width:0%"></div></div>
+  <div class="progress-label"><span id="plabel">Étape 1 sur 6</span><span id="ppct">0%</span></div>
+</div>
+
+<!-- STEP 1 -->
+<div class="step active" id="step1">
+  <div class="step-num">01</div>
+  <div class="step-title">Ton domaine</div>
+  <div class="step-hint">Dans quel grand univers évolues-tu ? Ne te préoccupe pas encore d'être précise — on va affiner ensemble.</div>
+  <label class="field-label">Choisis le domaine qui te correspond le mieux</label>
+  <div class="pills" id="pills-domaine">
+    <span class="pill" onclick="togglePill(this,'domaine')">Bien-être & santé</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Parentalité</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Développement personnel</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Finance & business</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Mode & beauté</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Cuisine & nutrition</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Voyage & lifestyle</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Créativité & arts</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Tech & digital</span>
+    <span class="pill" onclick="togglePill(this,'domaine')">Autre</span>
+  </div>
+  <label class="field-label" style="margin-top:16px;">Précise en tes propres mots</label>
+  <input type="text" id="domaine-custom" placeholder="ex : le business en ligne pour femmes">
+  <div class="nav"><div></div><button class="btn btn-next" onclick="nextStep(1)">Suivant →</button></div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step" id="step2">
+  <div class="step-num">02</div>
+  <div class="step-title">Ta cible</div>
+  <div class="step-hint">Plus tu es précise sur qui tu veux aider, plus les bonnes personnes vont se reconnaître dans ton contenu.</div>
+  <label class="field-label">Qui veux-tu aider ?</label>
+  <textarea id="cible-qui" placeholder="ex : des femmes fatiguées de leur boulot qui veulent plus de la vie"></textarea>
+  <label class="field-label">Quel est leur problème principal ?</label>
+  <textarea id="cible-probleme" placeholder="ex : elles n'ont jamais assez d'argent, pas de temps pour elles"></textarea>
+  <label class="field-label">Quel est leur désir profond ?</label>
+  <textarea id="cible-desir" placeholder="ex : atteindre la liberté financière et être pleinement indépendante"></textarea>
+  <div class="nav">
+    <button class="btn btn-back" onclick="prevStep(2)">← Retour</button>
+    <button class="btn btn-next" onclick="nextStep(2)">Suivant →</button>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step" id="step3">
+  <div class="step-num">03</div>
+  <div class="step-title">Ce qui te rend unique</div>
+  <div class="step-hint">Tu n'as pas besoin d'être "la meilleure" — tu as juste besoin d'être toi.</div>
+  <label class="field-label">Quelles compétences maîtrises-tu naturellement ?</label>
+  <textarea id="diff-competences" placeholder="ex : la vente, créer de la confiance, les relations humaines"></textarea>
+  <label class="field-label">Pour quoi est-ce qu'on vient spontanément te demander de l'aide ?</label>
+  <textarea id="diff-aide" placeholder="ex : comment inspirer confiance à travers les réseaux"></textarea>
+  <label class="field-label">Que pourrais-tu enseigner ou transmettre facilement ?</label>
+  <textarea id="diff-enseigner" placeholder="ex : comment développer une aura digitale"></textarea>
+  <label class="field-label">Quelle expérience personnelle te donne cette légitimité ?</label>
+  <textarea id="diff-experience" placeholder="ex : j'ai gagné 30k avec mon business en ligne grâce à mon contenu"></textarea>
+  <label class="field-label">Comment pourrais-tu transformer ce vécu en inspiration pour les autres ?</label>
+  <textarea id="diff-transfo" placeholder="ex : montrer que c'est possible même en partant de zéro"></textarea>
+  <div class="nav">
+    <button class="btn btn-back" onclick="prevStep(3)">← Retour</button>
+    <button class="btn btn-next" onclick="nextStep(3)">Suivant →</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step" id="step4">
+  <div class="step-num">04</div>
+  <div class="step-title">Ton pourquoi</div>
+  <div class="step-hint">Les gens ne s'abonnent pas à ce que tu fais — ils s'abonnent à pourquoi tu le fais.</div>
+  <label class="field-label">Pourquoi tu fais ça ? Quelle histoire t'a amenée ici ?</label>
+  <textarea id="pourquoi-histoire" placeholder="ex : j'ai tout perdu jusqu'à mon appartement, et j'ai décidé de ne plus jamais dépendre d'un CDI"></textarea>
+  <label class="field-label">Quelle transformation veux-tu créer chez les personnes qui te suivent ?</label>
+  <textarea id="pourquoi-transfo" placeholder="ex : je veux qu'elles s'épanouissent en gagnant plus d'argent qu'elles ne l'ont jamais fait"></textarea>
+  <div class="nav">
+    <button class="btn btn-back" onclick="prevStep(4)">← Retour</button>
+    <button class="btn btn-next" onclick="nextStep(4)">Suivant →</button>
+  </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step" id="step5">
+  <div class="step-num">05</div>
+  <div class="step-title">Tes valeurs & ton style</div>
+  <div class="step-hint">Quelles valeurs guident ton contenu ? Et comment tu parles à ta communauté ?</div>
+  <label class="field-label">Sélectionne tes valeurs (3 à 5 max)</label>
+  <div class="pills" id="pills-valeurs">
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Authenticité</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Bienveillance</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Liberté</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Ambition</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Simplicité</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Indépendance</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Sororité</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Épanouissement</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Honnêteté</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Impact</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Créativité</span>
+    <span class="pill" onclick="togglePillMulti(this,'valeurs')">Slow living</span>
+  </div>
+  <label class="field-label" style="margin-top:14px;">Autres valeurs ?</label>
+  <input type="text" id="valeurs-autres" placeholder="ex : transparence, courage, joie...">
+  <label class="field-label">Mon ton c'est plutôt…</label>
+  <div class="pills" id="pills-ton">
+    <span class="pill" onclick="togglePill(this,'ton')">Doux & bienveillant</span>
+    <span class="pill" onclick="togglePill(this,'ton')">Cash & direct</span>
+    <span class="pill" onclick="togglePill(this,'ton')">Inspirant & ambitieux</span>
+    <span class="pill" onclick="togglePill(this,'ton')">Humoristique & léger</span>
+    <span class="pill" onclick="togglePill(this,'ton')">Pédagogue & structuré</span>
+    <span class="pill" onclick="togglePill(this,'ton')">Intime & vulnérable</span>
+    <span class="pill" onclick="togglePill(this,'ton')">Énergique & motivant</span>
+  </div>
+  <label class="field-label" style="margin-top:14px;">Ce que je ne veux SURTOUT PAS paraître</label>
+  <input type="text" id="ton-negatif" placeholder="ex : trop vendeuse, pushy, comme si je courais après les ventes">
+  <label class="field-label">3 mots qui décrivent ton univers visuel</label>
+  <input type="text" id="ton-ambiance" placeholder="ex : simple, chaleureux, magnétique">
+  <div class="nav">
+    <button class="btn btn-back" onclick="prevStep(5)">← Retour</button>
+    <button class="btn btn-next" onclick="nextStep(5)">Suivant →</button>
+  </div>
+</div>
+
+<!-- STEP 6 -->
+<div class="step" id="step6">
+  <div class="step-num">06</div>
+  <div class="step-title">Tes inspirations</div>
+  <div class="step-hint">Pas pour copier — mais pour comprendre ce qui te parle et dans quel univers tu t'inscris.</div>
+  <label class="field-label">2 ou 3 créatrices / comptes qui t'inspirent (et pourquoi)</label>
+  <textarea id="inspi-comptes" placeholder="ex : @shelby_sapp — j'aime sa façon de vendre, son énergie"></textarea>
+  <label class="field-label">Ce que tu admires mais que tu veux faire différemment</label>
+  <textarea id="inspi-diff" placeholder="ex : j'aimerais vendre comme elle mais sans le marketing culpabilisant"></textarea>
+  <div class="nav">
+    <button class="btn btn-back" onclick="prevStep(6)">← Retour</button>
+    <button class="btn btn-generate" onclick="generateRecap()">Générer ma fiche →</button>
+  </div>
+</div>
+
+<!-- RECAP -->
+<div class="recap" id="recap">
+  <div class="recap-grid" id="recap-grid"></div>
+  <div class="prompt-bloc">
+    <div class="prompt-eyebrow">Étape suivante — synthèse de positionnement</div>
+    <div class="prompt-instruction">Copie ta fiche + ce prompt dans une nouvelle conversation Claude pour obtenir ta synthèse rédigée :</div>
+    <div class="prompt-box" id="prompt-display"></div>
+  </div>
+  <button class="copy-btn" onclick="copyFiche()">Copier ma fiche complète</button>
+  <div class="copy-confirm" id="cc1">✓ Fiche copiée — colle-la dans Claude !</div>
+  <button class="copy-btn" style="margin-top:6px;" onclick="copyPrompt()">Copier la fiche + le prompt synthèse</button>
+  <div class="copy-confirm" id="cc2">✓ Tout copié — colle dans une nouvelle conversation Claude !</div>
+  <button class="reset-btn" onclick="resetForm()">Recommencer</button>
+</div>
+
+</div>
+<script>
+let current=1;const total=6;
+const sp={domaine:null,ton:null,valeurs:[]};
+let ficheText='';
+
+function togglePill(el,g){document.querySelectorAll('#pills-'+g+' .pill').forEach(p=>p.classList.remove('selected'));el.classList.add('selected');sp[g]=el.textContent;}
+function togglePillMulti(el,g){if(el.classList.contains('selected')){el.classList.remove('selected');sp[g]=sp[g].filter(x=>x!==el.textContent);}else{if(sp[g].length>=5)return;el.classList.add('selected');sp[g].push(el.textContent);}}
+function updateProgress(s){const pct=Math.round((s-1)/total*100);document.getElementById('pfill').style.width=pct+'%';document.getElementById('plabel').textContent='Étape '+s+' sur '+total;document.getElementById('ppct').textContent=pct+'%';}
+function nextStep(f){document.getElementById('step'+f).classList.remove('active');current=f+1;if(current<=total){document.getElementById('step'+current).classList.add('active');updateProgress(current);}window.scrollTo(0,0);}
+function prevStep(f){document.getElementById('step'+f).classList.remove('active');current=f-1;document.getElementById('step'+current).classList.add('active');updateProgress(current);window.scrollTo(0,0);}
+function v(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+
+function generateRecap(){
+  document.getElementById('step6').classList.remove('active');
+  document.getElementById('pfill').style.width='100%';
+  document.getElementById('plabel').textContent='Fiche complétée';
+  document.getElementById('ppct').textContent='100%';
+
+  const domaine=v('domaine-custom')||(sp.domaine||'');
+  const sections=[
+    {label:'Domaine',value:domaine},
+    {label:'Qui tu veux aider',value:[v('cible-qui'),v('cible-probleme')?'→ Problème : '+v('cible-probleme'):'',v('cible-desir')?'→ Désir profond : '+v('cible-desir'):''].filter(Boolean).join('\n')},
+    {label:'Ce qui te rend unique',value:[v('diff-competences')?'Compétences naturelles : '+v('diff-competences'):'',v('diff-aide')?'On vient me voir pour : '+v('diff-aide'):'',v('diff-enseigner')?'Je pourrais enseigner : '+v('diff-enseigner'):''].filter(Boolean).join('\n')},
+    {label:'Ton vécu comme force',value:[v('diff-experience'),v('diff-transfo')?'→ Comment je le transmets : '+v('diff-transfo'):''].filter(Boolean).join('\n')},
+    {label:'Ton pourquoi',value:[v('pourquoi-histoire'),v('pourquoi-transfo')?'→ Transformation visée : '+v('pourquoi-transfo'):''].filter(Boolean).join('\n')},
+    {label:'Tes valeurs',value:[...sp.valeurs,v('valeurs-autres')].filter(Boolean).join(' · ')},
+    {label:'Ton style de communication',value:[sp.ton,v('ton-negatif')?'→ À éviter : '+v('ton-negatif'):'',v('ton-ambiance')?'→ Ambiance visuelle : '+v('ton-ambiance'):''].filter(Boolean).join('\n')},
+    {label:'Tes inspirations',value:[v('inspi-comptes'),v('inspi-diff')?'→ Ce que tu feras différemment : '+v('inspi-diff'):''].filter(Boolean).join('\n')},
+  ];
+
+  const grid=document.getElementById('recap-grid');
+  grid.innerHTML='';
+  ficheText='— MA FICHE NICHE —\n\n';
+  sections.forEach(s=>{
+    if(!s.value)return;
+    const b=document.createElement('div');
+    b.className='recap-block';
+    b.innerHTML='<div class="recap-label">'+s.label+'</div><div class="recap-value">'+s.value.replace(/\n/g,'<br>')+'</div>';
+    grid.appendChild(b);
+    ficheText+=s.label.toUpperCase()+'\n'+s.value+'\n\n';
+  });
+
+  const promptText='À partir de ces éléments, rédige un paragraphe de 3 à 4 phrases qui synthétise mon positionnement de façon claire, fluide et percutante. Ce paragraphe doit :\n- S\'adresser à moi en "tu"\n- Reformuler mes idées avec talent — pas les recopier mot pour mot\n- Avoir une vraie logique narrative : qui j\'aide → ce qui me rend unique avec mon vécu réel et mes chiffres → mon pourquoi émotionnel → mon énergie et mon identité\n- Sonner comme si quelqu\'un de bienveillant et expert avait tout lu et me servait mon positionnement sur un plateau\n- Être vivant, direct, sans formules creuses\n\nRéponds uniquement avec le paragraphe. Pas d\'introduction, pas de titre.';
+
+  document.getElementById('prompt-display').textContent='Voici ma fiche niche complète :\n\n'+ficheText+'\n---\n\n'+promptText;
+
+  document.getElementById('recap').classList.add('show');
+  window.scrollTo(0,0);
+}
+
+function copyFiche(){
+  navigator.clipboard.writeText(ficheText).then(()=>{
+    const c=document.getElementById('cc1');c.style.display='block';
+    setTimeout(()=>c.style.display='none',3000);
+  });
+}
+
+function copyPrompt(){
+  const promptText='À partir de ces éléments, rédige un paragraphe de 3 à 4 phrases qui synthétise mon positionnement de façon claire, fluide et percutante. Ce paragraphe doit :\n- S\'adresser à moi en "tu"\n- Reformuler mes idées avec talent — pas les recopier mot pour mot\n- Avoir une vraie logique narrative : qui j\'aide → ce qui me rend unique avec mon vécu réel et mes chiffres → mon pourquoi émotionnel → mon énergie et mon identité\n- Sonner comme si quelqu\'un de bienveillant et expert avait tout lu et me servait mon positionnement sur un plateau\n- Être vivant, direct, sans formules creuses\n\nRéponds uniquement avec le paragraphe. Pas d\'introduction, pas de titre.';
+  navigator.clipboard.writeText('Voici ma fiche niche complète :\n\n'+ficheText+'\n---\n\n'+promptText).then(()=>{
+    const c=document.getElementById('cc2');c.style.display='block';
+    setTimeout(()=>c.style.display='none',3000);
+  });
+}
+
+function resetForm(){
+  document.getElementById('recap').classList.remove('show');
+  current=1;
+  for(let i=1;i<=total;i++){const s=document.getElementById('step'+i);if(s)s.classList.remove('active');}
+  document.getElementById('step1').classList.add('active');
+  updateProgress(1);
+  sp.domaine=null;sp.ton=null;sp.valeurs=[];ficheText='';
+  document.querySelectorAll('.pill.selected').forEach(p=>p.classList.remove('selected'));
+  document.querySelectorAll('input[type=text],textarea').forEach(el=>el.value='');
+  document.getElementById('recap-grid').innerHTML='';
+  window.scrollTo(0,0);
+}
+updateProgress(1);
+</script>
+</body>
+</html>
